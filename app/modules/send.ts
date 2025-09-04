@@ -26,10 +26,7 @@ export const createSendModule = (sock: WASocket) =>
       const groupId = body.groupId || env.groupJid;
       await sock.sendMessage(groupId, { text: body.message });
       insertLog({ message: body.message, groupId });
-<<<<<<< Updated upstream
-=======
       console.log(`[WA] Message sent to ${groupId}: ${body.message}`);
->>>>>>> Stashed changes
 
       return {
         success: true,
