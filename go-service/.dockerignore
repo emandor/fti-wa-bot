@@ -1,8 +1,0 @@
-.git
-.gitignore
-auth.db
-logs.db
-*.db
-bin
-dist
-tmp

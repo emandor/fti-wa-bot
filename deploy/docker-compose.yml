@@ -2,7 +2,7 @@ services:
   api:
     container_name: wa-bot-notif-api
     build:
-      context: ../go-service
+      context: ..
       dockerfile: Dockerfile
     env_file:
       - ../.env

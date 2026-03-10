@@ -29,6 +29,6 @@ This root file is the AI entrypoint. Canonical AI documentation is organized und
 
 ## Project Objective
 
-- Rewrite WhatsApp notification service from TypeScript/Bun to Go/whatsmeow
-- Preserve API behavior parity
-- Improve reliability and deploy to Debian homelab via Docker
+- Go/whatsmeow WhatsApp notification service (rewrite from TypeScript/Bun is complete)
+- Deploy to Debian homelab via Docker Compose
+- See `docs/ai/knowledge/project-knowledge.md` for full context
