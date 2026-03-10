@@ -1,28 +1,28 @@
 # AI Documentation Index
 
-This directory contains AI-facing guidance, migration context, and planning artifacts.
+This directory contains AI-facing guidance and planning artifacts.
 
 ## Structure
 
 ```text
-docs/ai/
-├── README.md
-├── agents/
-│   └── agent-strategy.md
-├── skills/
-│   └── skill-matrix.md
-├── knowledge/
-│   ├── project-knowledge.md
-│   └── go-rewrite-context.md
-└── plans/
-    └── go-rewrite-branch-cicd-homelab-plan.md
+docs/
+├── deploy.md                          ← deployment runbook (start here for ops)
+└── ai/
+    ├── README.md                      ← this file
+    ├── agents/agent-strategy.md
+    ├── skills/skill-matrix.md
+    ├── knowledge/
+    │   ├── project-knowledge.md       ← canonical project state (start here for context)
+    │   └── go-rewrite-context.md      ← rewrite rationale (historical reference)
+    └── plans/
+        └── go-rewrite-branch-cicd-homelab-plan.md  ← infra plan (historical reference)
 ```
 
 ## What to Read First
 
-1. `docs/ai/knowledge/project-knowledge.md`
-2. `docs/ai/knowledge/go-rewrite-context.md`
-3. `docs/ai/plans/go-rewrite-branch-cicd-homelab-plan.md`
+1. `docs/ai/knowledge/project-knowledge.md` — current architecture and design decisions
+2. `docs/deploy.md` — deployment topology and runbook
+3. `docs/ai/plans/go-rewrite-branch-cicd-homelab-plan.md` — homelab infra context
 
 ## Operational Rule
 

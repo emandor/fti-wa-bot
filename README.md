@@ -94,3 +94,7 @@ Set `INTEGRATION_NETWORK=homelab_integration` in `.env`.
 
 - `AGENTS.md` — agent entrypoint
 - `docs/ai/README.md` — full AI docs index
+
+## Deployment Guide
+
+- `docs/deploy.md` — full deployment runbook (local, Docker, homelab, WireGuard)

@@ -1,66 +1,70 @@
 # Project Knowledge
 
+## Status
+
+Go rewrite is **complete**. The service is a pure Go project (whatsmeow), deployed via Docker Compose on Debian homelab. TypeScript/Bun implementation has been removed.
+
 ## Product Summary
 
-The service provides an authenticated HTTP endpoint to send WhatsApp text messages.
+Authenticated HTTP service that sends WhatsApp text messages via a connected WhatsApp account.
 
-Current external contract:
-- Endpoint: `POST /send`
-- Request: `message` (required), `groupId` (optional)
-- Auth: Bearer token (`AUTH_TOKEN`)
-- Side effects: send WA message and store logs
+External contract:
+- `POST /send` — send a message, auth: Bearer token
+- `GET /contacts` — list synced WA contacts
+- `GET /messages?limit=100` — recent runtime message cache
+- `GET /healthz` / `GET /readyz` — health and readiness probes
 
-## Key Risks Already Identified
+## Architecture
 
-- stale socket/client reference after reconnect
-- recursive reconnect loop without bounded backoff
-- empty token startup risk
-- missing guarded send failure handling
-- duplicated event listener registration
-- auth/key persistence timing gaps
+```
+cmd/api/main.go         — entry point, server bootstrap
+internal/config/        — env config loading and validation
+internal/httpapi/       — HTTP handlers (net/http ServeMux)
+internal/wa/            — WhatsApp connection manager (whatsmeow)
+internal/storage/       — SQLite audit log store
+deploy/                 — Docker Compose
+```
 
-## Migration Invariants
+## Key Design Decisions
 
-- Preserve API contract during rewrite
-- Preserve session persistence across restarts
-- Preserve logging side effects (schema can improve)
-- Sending must remain functional after reconnect events
-
-## Target Go Architecture
-
-- `ConnectionManager`: single active whatsmeow client, safe reconnect, state exposure
-- `SendService`: input validation, timeout-bounded send, stable error mapping
-- `AuthStore`: durable credentials/keys persistence
-- `LogStore`: send + security logs
-- API endpoints: `/send`, `/healthz`, `/readyz`
-
-## Deployment Topology (Planned)
-
-`Cloudflare DNS -> DO VPS edge proxy -> WireGuard tunnel -> Debian homelab (Docker)`
+- Single `Manager` owns the whatsmeow client; thread-safe via `sync.RWMutex`
+- Exponential backoff with jitter on reconnect (1s base, 60s cap)
+- `MessageBuffer` is a bounded (500-entry) FIFO for incoming message cache
+- `LogStore.StartRetention` purges logs older than 30 days (daily goroutine)
+- `AUTH_TOKEN` is validated non-empty at startup (fail-fast)
+- zerolog for structured logging; `LOG_LEVEL` env controls verbosity
 
 ## Baseline Environment Variables
 
-- `PORT`
-- `AUTH_TOKEN` (required, non-empty)
-- `GROUP_JID` (required if no per-request override is intended)
+| Variable | Required | Default |
+|----------|----------|---------|
+| `AUTH_TOKEN` | ✅ | — |
+| `PORT` | — | `5000` |
+| `GROUP_JID` | — | — |
+| `AUTH_DB_DSN` | — | `file:auth.db?_foreign_keys=on` |
+| `LOGS_DB_DSN` | — | `file:logs.db?_foreign_keys=on` |
+| `LOG_LEVEL` | — | `info` |
 
-## CI/CD Baseline
+## Deployment Topology
 
-- `go fmt`
+`Cloudflare DNS → DO VPS edge proxy → WireGuard tunnel → Debian homelab (Docker Compose)`
+
+See `docs/deploy.md` for the full deployment guide.
+
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`):
+- `go fmt` check
 - `go vet`
 - `go test ./...`
-- `go test -race` (critical packages)
-- Docker build + image vulnerability scan
-
-## Rollback Model
-
-- Keep TypeScript implementation available during soak period
-- Route switch at proxy/DNS layer for fast rollback
-- rollback triggers: send success drop, reconnect storm, persistent readiness failure
+- `go test -race`
+- `go build`
+- Docker image build
 
 ## Canonical References
 
-- `docs/ai/knowledge/go-rewrite-context.md`
-- `docs/ai/plans/go-rewrite-branch-cicd-homelab-plan.md`
-- `docs/ai/agents/agent-strategy.md`
-- `docs/ai/skills/skill-matrix.md`
+- `docs/deploy.md` — deployment runbook
+- `docs/ai/knowledge/go-rewrite-context.md` — original rewrite context (historical)
+- `docs/ai/plans/go-rewrite-branch-cicd-homelab-plan.md` — original infra plan (historical)
+- `docs/ai/agents/agent-strategy.md` — agent workflow
+- `docs/ai/skills/skill-matrix.md` — skill matrix
