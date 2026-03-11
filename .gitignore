@@ -1,49 +1,29 @@
-# dependencies (bun install)
-node_modules
+# Go build output
+/wa-bot-notif
+/api
 
-# output
-out
-dist
-*.tgz
+# Go test cache and coverage
+*.test
+*.out
+coverage.html
 
-# code coverage
-coverage
-*.lcov
+# Go workspace
+go.work
+go.work.sum
 
-# logs
-logs
-_.log
-report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
-
-# dotenv environment variable files
+# dotenv
 .env
-.env.development.local
-.env.test.local
-.env.production.local
 .env.local
 
-# caches
-.eslintcache
-.cache
-*.tsbuildinfo
-
-# IntelliJ based IDEs
-.idea
-
-# Finder (MacOS) folder config
-.DS_Store
-# SQLite database file
+# SQLite runtime databases
 *.db
 
-# Bun lockfile (optional, include if you don’t want it versioned)
-bun.lockb
+# IDE
+.idea
+.vscode
 
-# Auth storage (your baileys state)
-auth.json
-auth.db
+# macOS
+.DS_Store
 
-# Bun build cache (if any custom dir used)
-.bun
-
-# Bun config file (if using local override)
-.bunfig.toml
+# Logs directory
+/logs/
